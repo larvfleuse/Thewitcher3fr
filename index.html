@@ -2,253 +2,826 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Tracker Quêtes – The Witcher 3</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Witcher 3 100% Tracker</title>
   <style>
     :root {
-      --gray-50: #f9fafb;
-      --gray-100: #f3f4f6;
-      --gray-900: #111827;
-      --green-500: #10b981;
-      --bg: #f9fafb;
-      --text: #111827;
-      --card-bg: #ffffff;
+      --bg: #0f1115;
+      --panel: #171a21;
+      --panel-2: #1f2430;
+      --text: #eceff4;
+      --muted: #aab2c0;
+      --accent: #c9a86a;
+      --accent-2: #6fa8dc;
+      --done: #4caf50;
+      --border: #2c3444;
+      --danger: #d66;
+      --shadow: 0 10px 30px rgba(0,0,0,.3);
+      --radius: 16px;
     }
-    [data-theme="dark"] {
-      --bg: #111827;
-      --text: #f9fafb;
-      --card-bg: #1f2937;
-    }
-    html { scroll-behavior: smooth; }
+
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      background: var(--bg);
+      font-family: Inter, system-ui, Arial, sans-serif;
+      background: linear-gradient(180deg, #0b0d12, #131722);
       color: var(--text);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(201,168,106,.15), rgba(111,168,220,.08));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .controls input,
+    .controls select,
+    .controls button {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      font: inherit;
+    }
+
+    .controls button {
+      cursor: pointer;
+      background: var(--accent);
+      color: #151515;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    aside, main {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    aside {
+      padding: 18px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .region-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .region-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .region-btn.active {
+      border-color: var(--accent);
+      outline: 1px solid rgba(201,168,106,.35);
+    }
+
+    .badge {
+      background: rgba(201,168,106,.15);
+      color: var(--accent);
+      border: 1px solid rgba(201,168,106,.3);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: .8rem;
+      white-space: nowrap;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .progress-wrap {
+      width: 100%;
+      background: #0c0f15;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      height: 14px;
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #e4c588);
+      transition: width .25s ease;
+    }
+
+    .quest-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .quest {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: start;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .quest.done {
+      opacity: .72;
+    }
+
+    .quest input[type="checkbox"] {
+      margin-top: 4px;
+      transform: scale(1.2);
+      accent-color: var(--done);
+      cursor: pointer;
+    }
+
+    .quest-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .quest.done .quest-title {
+      text-decoration: line-through;
+    }
+
+    .quest-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .pill {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+
+    .type-main { color: #f0d38a; }
+    .type-side { color: #9dd6ff; }
+    .type-contract { color: #ffb38a; }
+    .type-treasure { color: #d8b4ff; }
+    .type-gwent { color: #9ef0b3; }
+    .type-scavenger { color: #f5a7a7; }
+    .type-activity { color: #c6c6c6; }
+
+    .empty {
+      color: var(--muted);
+      padding: 18px;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.02);
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-top: 18px;
       line-height: 1.5;
     }
-    .container {
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 1rem 1rem 100px;
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      aside {
+        position: static;
+      }
+      .controls {
+        grid-template-columns: 1fr 1fr;
+      }
     }
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.75rem 0 1.25rem;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .header h1 { font-size: 1.5rem; margin: 0; font-weight: 600; }
-    .progress-bar {
-      margin-top: 0.25rem;
-      font-size: 0.875rem;
-      opacity: 0.8;
-    }
-    .tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin: 1rem 0 0.5rem;
-      overflow-x: auto;
-      padding-bottom: 0.5rem;
-    }
-    .tab {
-      padding: 0.5rem 0.75rem;
-      border-radius: 0.375rem;
-      white-space: nowrap;
-      background: var(--gray-100);
-      cursor: pointer;
-      user-select: none;
-    }
-    .tab.active {
-      background: var(--green-500);
-      color: white;
-    }
-    .quête-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .quête {
-      display: flex;
-      align-items: center;
-      padding: 0.75rem 1rem;
-      border-radius: 0.5rem;
-      background: var(--card-bg);
-      margin-bottom: 0.5rem;
-      gap: 0.75rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .check-box {
-      flex-shrink: 0;
-      width: 24px;
-      height: 24px;
-      border: 2px solid #6b7280;
-      border-radius: 0.375rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.875rem;
-      cursor: pointer;
-    }
-    .check-box.checked {
-      background: var(--green-500);
-      border-color: var(--green-500);
-      color: white;
-    }
-    .titre {
-      flex: 1;
-      margin: 0;
-      font-size: 0.875rem;
-    }
-    .zone {
-      font-size: 0.75rem;
-      opacity: 0.7;
-      white-space: nowrap;
-    }
-    .toggle-theme {
-      padding: 0.5rem;
-      border-radius: 50%;
-      border: 1px solid #d1d5db;
-      background: #f9fafb;
-      cursor: pointer;
-    }
-    @media (max-width: 768px) {
-      .titre, .zone { font-size: 0.8rem; }
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #111827;
-        --text: #f9fafb;
-        --card-bg: #1f2937;
+
+    @media (max-width: 640px) {
+      .container { padding: 14px; }
+      .controls {
+        grid-template-columns: 1fr;
+      }
+      .quest {
+        grid-template-columns: auto 1fr;
+      }
+      .quest > div:last-child {
+        grid-column: 2;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <div>
-        <h1>Tracker The Witcher 3</h1>
-        <div class="progress-bar" id="progress">0/0 tâches complètes</div>
+    <header>
+      <div class="hero">
+        <h1>Witcher 3 — Tracker 100%</h1>
+        <p class="subtitle">
+          Quêtes classées par région, niveau et catégorie. Base prête pour une complétion totale du jeu, y compris les extensions.
+        </p>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Total affiché</div>
+            <div class="stat-value" id="totalCount">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Terminé</div>
+            <div class="stat-value" id="doneCount">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Restant</div>
+            <div class="stat-value" id="remainingCount">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Progression</div>
+            <div class="stat-value" id="progressPercent">0%</div>
+          </div>
+        </div>
+
+        <div class="progress-wrap" aria-label="Progression globale">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="controls">
+          <input id="searchInput" type="text" placeholder="Rechercher une quête..." />
+          <select id="regionFilter">
+            <option value="all">Toutes les régions</option>
+          </select>
+          <select id="typeFilter">
+            <option value="all">Tous les types</option>
+          </select>
+          <select id="sortFilter">
+            <option value="level-asc">Trier : niveau croissant</option>
+            <option value="level-desc">Trier : niveau décroissant</option>
+            <option value="name-asc">Trier : nom A-Z</option>
+            <option value="region-asc">Trier : région A-Z</option>
+          </select>
+          <button id="resetProgress">Réinitialiser la progression</button>
+        </div>
       </div>
-      <button class="toggle-theme" aria-label="Changer le thème" onclick="toggleTheme()">
-        <span id="icon-theme">🌞</span>
-      </button>
-    </div>
+    </header>
 
-    <div class="tabs" id="zones">
-      <div class="tab active" data-zone="all">Toutes</div>
-    </div>
+    <div class="layout">
+      <aside>
+        <h2>Régions</h2>
+        <div class="region-list" id="regionList"></div>
+      </aside>
 
-    <ul class="quête-list" id="quests">
-      <!-- Les quêtes seront insérées ici par JavaScript -->
-    </ul>
+      <main>
+        <div class="section-head">
+          <div>
+            <h2 id="currentViewTitle">Toutes les quêtes</h2>
+            <p class="subtitle" id="currentViewSubtitle">Affichage global</p>
+          </div>
+        </div>
+
+        <div class="quest-list" id="questList"></div>
+
+        <p class="footer-note">
+          Note : les listes “100%” de Witcher 3 varient selon les sources, car certaines comptent uniquement les quêtes du journal tandis que d’autres ajoutent aussi Gwent, treasure hunts, scavenger hunts, activités et DLC. Les checklist communautaires les plus complètes tournent autour de 275+ entrées. [page:1][page:2][web:32]
+        </p>
+      </main>
+    </div>
   </div>
 
   <script>
-    // Liste de quêtes exemple (ajoutez toutes vos quêtes ici)
-    const quests = [
-      { titre: "Une affaire de famille", zone: "Blanchefleur", type: "principale", done: false },
-      { titre: "Us et coutumes", zone: "Blanchefleur", type: "secondaire", done: false },
-      { titre: "La traque des goules", zone: "Blanchefleur", type: "contrat", done: false },
-      { titre: "Un trésor à Trou du Diable", zone: "Blanchefleur", type: "trésor", done: false },
-      { titre: "Un monstre à abattre", zone: "Velen", type: "contrat", done: false },
-      { titre: "Quête principale 2", zone: "Novigrad", type: "principale", done: false }
-      // Ajoutez toutes vos quêtes ici
+    const questData = [
+      // WHITE ORCHARD
+      { id: 1, title: "Lilac and Gooseberries", region: "White Orchard", level: 1, type: "Main" },
+      { id: 2, title: "The Beast of White Orchard", region: "White Orchard", level: 3, type: "Main" },
+      { id: 3, title: "Imperial Audience", region: "White Orchard", level: 5, type: "Main" },
+      { id: 4, title: "Missing in Action", region: "White Orchard", level: 2, type: "Side" },
+      { id: 5, title: "Twisted Firestarter", region: "White Orchard", level: 2, type: "Side" },
+      { id: 6, title: "On Death's Bed", region: "White Orchard", level: 2, type: "Side" },
+      { id: 7, title: "A Frying Pan, Spick and Span", region: "White Orchard", level: 2, type: "Side" },
+      { id: 8, title: "Precious Cargo", region: "White Orchard", level: 4, type: "Side" },
+      { id: 9, title: "Dirty Funds", region: "White Orchard", level: 4, type: "Treasure" },
+      { id: 10, title: "Temerian Valuables", region: "White Orchard", level: 4, type: "Treasure" },
+      { id: 11, title: "Deserter Gold", region: "White Orchard", level: 4, type: "Treasure" },
+      { id: 12, title: "Devil by the Well", region: "White Orchard", level: 2, type: "Contract" },
+      { id: 13, title: "The Incident in the White Orchard", region: "White Orchard", level: 1, type: "Activity" },
+
+      // VELEN / NO MAN'S LAND
+      { id: 14, title: "The Nilfgaardian Connection", region: "Velen", level: 5, type: "Main" },
+      { id: 15, title: "Bloody Baron", region: "Velen", level: 6, type: "Main" },
+      { id: 16, title: "Family Matters", region: "Velen", level: 6, type: "Main" },
+      { id: 17, title: "Ladies of the Wood", region: "Velen", level: 6, type: "Main" },
+      { id: 18, title: "Ciri's Story: The King of the Wolves", region: "Velen", level: 5, type: "Main" },
+      { id: 19, title: "Hunting a Witch", region: "Velen", level: 5, type: "Main" },
+      { id: 20, title: "Wandering in the Dark", region: "Velen", level: 6, type: "Main" },
+      { id: 21, title: "Magic Lamp", region: "Velen", level: 6, type: "Side" },
+      { id: 22, title: "An Invitation from Keira Metz", region: "Velen", level: 6, type: "Side" },
+      { id: 23, title: "A Towerful of Mice", region: "Velen", level: 6, type: "Side" },
+      { id: 24, title: "A Favor for a Friend", region: "Velen", level: 6, type: "Side" },
+      { id: 25, title: "For the Advancement of Learning", region: "Velen", level: 6, type: "Side" },
+      { id: 26, title: "Return to Crookback Bog", region: "Velen", level: 11, type: "Main" },
+      { id: 27, title: "Ciri's Room", region: "Velen", level: 5, type: "Main" },
+      { id: 28, title: "The Whispering Hillock", region: "Velen", level: 5, type: "Main" },
+      { id: 29, title: "A Princess in Distress", region: "Velen", level: 5, type: "Main" },
+      { id: 30, title: "Ladies of the Wood Follow-up", region: "Velen", level: 7, type: "Activity" },
+      { id: 31, title: "The Fall of the House of Reardon", region: "Velen", level: 10, type: "Side" },
+      { id: 32, title: "Forefathers' Eve", region: "Velen", level: 7, type: "Side" },
+      { id: 33, title: "Ghosts of the Past", region: "Velen", level: 22, type: "Side" },
+      { id: 34, title: "A Greedy God", region: "Velen", level: 7, type: "Side" },
+      { id: 35, title: "Funeral Pyres", region: "Velen", level: 3, type: "Side" },
+      { id: 36, title: "Shrieker", region: "Velen", level: 8, type: "Contract" },
+      { id: 37, title: "The Mystery of the Byways Murders", region: "Velen", level: 22, type: "Contract" },
+      { id: 38, title: "Jenny o' the Woods", region: "Velen", level: 10, type: "Contract" },
+      { id: 39, title: "The Merry Widow", region: "Velen", level: 10, type: "Contract" },
+      { id: 40, title: "Missing Brother", region: "Velen", level: 33, type: "Contract" },
+      { id: 41, title: "Swamp Thing", region: "Velen", level: 12, type: "Contract" },
+      { id: 42, title: "Phantom of the Trade Route", region: "Velen", level: 23, type: "Contract" },
+      { id: 43, title: "The Oxenfurt Drunk", region: "Velen", level: 26, type: "Contract" },
+      { id: 44, title: "Woodland Beast", region: "Velen", level: 20, type: "Contract" },
+      { id: 45, title: "Lord of the Wood", region: "Velen", level: 24, type: "Contract" },
+      { id: 46, title: "Merry Widow Treasure", region: "Velen", level: 10, type: "Treasure" },
+      { id: 47, title: "Hidden Messages of the Nilfgaardian Kind", region: "Velen", level: 4, type: "Treasure" },
+      { id: 48, title: "Lost Goods", region: "Velen", level: 6, type: "Treasure" },
+      { id: 49, title: "Blood Gold", region: "Velen", level: 18, type: "Treasure" },
+      { id: 50, title: "Sunken Treasure", region: "Velen", level: 4, type: "Treasure" },
+      { id: 51, title: "Scavenger Hunt: Griffin School Gear", region: "Velen", level: 11, type: "Scavenger" },
+      { id: 52, title: "Scavenger Hunt: Griffin School Gear Upgrade Diagrams - Part 1", region: "Velen", level: 18, type: "Scavenger" },
+      { id: 53, title: "Scavenger Hunt: Cat School Gear", region: "Velen", level: 17, type: "Scavenger" },
+      { id: 54, title: "Scavenger Hunt: Bear School Gear", region: "Velen", level: 20, type: "Scavenger" },
+      { id: 55, title: "Scavenger Hunt: Viper School Gear", region: "Velen", level: 7, type: "Scavenger" },
+
+      // NOVIGRAD / OXENFURT
+      { id: 56, title: "Pyres of Novigrad", region: "Novigrad", level: 10, type: "Main" },
+      { id: 57, title: "Novigrad Dreaming", region: "Novigrad", level: 7, type: "Main" },
+      { id: 58, title: "Broken Flowers", region: "Novigrad", level: 11, type: "Main" },
+      { id: 59, title: "Get Junior", region: "Novigrad", level: 12, type: "Main" },
+      { id: 60, title: "Count Reuven's Treasure", region: "Novigrad", level: 12, type: "Main" },
+      { id: 61, title: "A Poet Under Pressure", region: "Novigrad", level: 13, type: "Main" },
+      { id: 62, title: "Ciri's Story: Breakneck Speed", region: "Novigrad", level: 13, type: "Main" },
+      { id: 63, title: "Ciri's Story: Visiting Junior", region: "Novigrad", level: 12, type: "Main" },
+      { id: 64, title: "Now or Never", region: "Novigrad", level: 14, type: "Side" },
+      { id: 65, title: "A Matter of Life and Death", region: "Novigrad", level: 12, type: "Side" },
+      { id: 66, title: "Redania's Most Wanted", region: "Novigrad", level: 12, type: "Side" },
+      { id: 67, title: "An Eye for an Eye", region: "Novigrad", level: 12, type: "Side" },
+      { id: 68, title: "A Deadly Plot", region: "Novigrad", level: 12, type: "Side" },
+      { id: 69, title: "Blindingly Obvious", region: "Novigrad", level: 28, type: "Main" },
+      { id: 70, title: "Carnal Sins", region: "Novigrad", level: 16, type: "Side" },
+      { id: 71, title: "Cabaret", region: "Novigrad", level: 14, type: "Side" },
+      { id: 72, title: "The Play's the Thing", region: "Novigrad", level: 13, type: "Main" },
+      { id: 73, title: "A Dangerous Game", region: "Novigrad", level: 11, type: "Side" },
+      { id: 74, title: "Gangs of Novigrad", region: "Novigrad", level: 12, type: "Side" },
+      { id: 75, title: "Following the Thread", region: "Novigrad", level: 15, type: "Side" },
+      { id: 76, title: "A Favor for Radovid", region: "Novigrad", level: 16, type: "Side" },
+      { id: 77, title: "Reason of State", region: "Novigrad", level: 28, type: "Side" },
+      { id: 78, title: "Of Swords and Dumplings", region: "Novigrad", level: 24, type: "Side" },
+      { id: 79, title: "A Feast for Crows", region: "Novigrad", level: 13, type: "Side" },
+      { id: 80, title: "Fencing Lessons", region: "Novigrad", level: 24, type: "Side" },
+      { id: 81, title: "Broken Bones", region: "Novigrad", level: 5, type: "Activity" },
+      { id: 82, title: "Contract: The Oxenfurt Drunk", region: "Oxenfurt", level: 26, type: "Contract" },
+      { id: 83, title: "Contract: The Creature from Oxenfurt Forest", region: "Oxenfurt", level: 35, type: "Contract" },
+      { id: 84, title: "The Volunteer", region: "Oxenfurt", level: 13, type: "Side" },
+      { id: 85, title: "Dangerous Game Cards", region: "Novigrad", level: 11, type: "Gwent" },
+      { id: 86, title: "Gwent: Big City Players", region: "Novigrad", level: 10, type: "Gwent" },
+      { id: 87, title: "Gwent: Old Pals", region: "Novigrad", level: 5, type: "Gwent" },
+      { id: 88, title: "Gwent: Playing Innkeeps", region: "Novigrad", level: 5, type: "Gwent" },
+      { id: 89, title: "Gwent: Velen Players", region: "Novigrad", level: 5, type: "Gwent" },
+      { id: 90, title: "High Stakes", region: "Novigrad", level: 26, type: "Gwent" },
+      { id: 91, title: "A Dangerous Game Reward", region: "Novigrad", level: 11, type: "Activity" },
+      { id: 92, title: "Scavenger Hunt: Wolf School Gear", region: "Novigrad", level: 14, type: "Scavenger" },
+      { id: 93, title: "Scavenger Hunt: Cat School Gear Upgrade Diagrams - Part 1", region: "Novigrad", level: 23, type: "Scavenger" },
+      { id: 94, title: "Scavenger Hunt: Bear School Gear Upgrade Diagrams - Part 1", region: "Novigrad", level: 25, type: "Scavenger" },
+
+      // SKELLIGE
+      { id: 95, title: "Destination: Skellige", region: "Skellige", level: 16, type: "Main" },
+      { id: 96, title: "The King is Dead – Long Live the King", region: "Skellige", level: 16, type: "Main" },
+      { id: 97, title: "Echoes of the Past", region: "Skellige", level: 17, type: "Main" },
+      { id: 98, title: "Missing Persons", region: "Skellige", level: 17, type: "Main" },
+      { id: 99, title: "Nameless", region: "Skellige", level: 17, type: "Main" },
+      { id: 100, title: "The Calm Before the Storm", region: "Skellige", level: 17, type: "Main" },
+      { id: 101, title: "Ciri's Story: The Calm Before the Storm", region: "Skellige", level: 17, type: "Main" },
+      { id: 102, title: "The Lord of Undvik", region: "Skellige", level: 17, type: "Side" },
+      { id: 103, title: "Possession", region: "Skellige", level: 17, type: "Side" },
+      { id: 104, title: "King's Gambit", region: "Skellige", level: 18, type: "Side" },
+      { id: 105, title: "Coronation", region: "Skellige", level: 18, type: "Side" },
+      { id: 106, title: "The Last Wish", region: "Skellige", level: 15, type: "Side" },
+      { id: 107, title: "Following the Thread (Skellige segment)", region: "Skellige", level: 15, type: "Side" },
+      { id: 108, title: "Shock Therapy", region: "Skellige", level: 13, type: "Side" },
+      { id: 109, title: "The Cave of Dreams", region: "Skellige", level: 17, type: "Side" },
+      { id: 110, title: "Iron Maiden", region: "Skellige", level: 19, type: "Side" },
+      { id: 111, title: "Master Armorers", region: "Skellige", level: 24, type: "Side" },
+      { id: 112, title: "Contract: The Phantom of Eldberg", region: "Skellige", level: 17, type: "Contract" },
+      { id: 113, title: "Contract: Missing Son", region: "Skellige", level: 29, type: "Contract" },
+      { id: 114, title: "Contract: Muir D'yaeblen", region: "Skellige", level: 14, type: "Contract" },
+      { id: 115, title: "Contract: Here Comes the Groom", region: "Skellige", level: 23, type: "Contract" },
+      { id: 116, title: "Contract: In the Heart of the Woods", region: "Skellige", level: 22, type: "Contract" },
+      { id: 117, title: "Contract: Dragon", region: "Skellige", level: 28, type: "Contract" },
+      { id: 118, title: "Contract: Strange Beast", region: "Skellige", level: 35, type: "Contract" },
+      { id: 119, title: "Contract: Skellige's Most Wanted", region: "Skellige", level: 29, type: "Contract" },
+      { id: 120, title: "Gwent: Skellige Style", region: "Skellige", level: 19, type: "Gwent" },
+      { id: 121, title: "Gwent: Shock Therapy Reward", region: "Skellige", level: 13, type: "Gwent" },
+      { id: 122, title: "Scavenger Hunt: Ursine School Gear", region: "Skellige", level: 20, type: "Scavenger" },
+      { id: 123, title: "Scavenger Hunt: Wolf School Gear Upgrade Diagrams - Part 1", region: "Skellige", level: 21, type: "Scavenger" },
+      { id: 124, title: "Scavenger Hunt: Griffin School Gear Upgrade Diagrams - Part 2", region: "Skellige", level: 26, type: "Scavenger" },
+      { id: 125, title: "Scavenger Hunt: Cat School Gear Upgrade Diagrams - Part 2", region: "Skellige", level: 29, type: "Scavenger" },
+      { id: 126, title: "Scavenger Hunt: Bear School Gear Upgrade Diagrams - Part 2", region: "Skellige", level: 30, type: "Scavenger" },
+
+      // KAER MORHEN / ENDGAME
+      { id: 127, title: "Ugly Baby", region: "Kaer Morhen", level: 19, type: "Main" },
+      { id: 128, title: "Disturbance", region: "Kaer Morhen", level: 19, type: "Main" },
+      { id: 129, title: "To Bait a Forktail...", region: "Kaer Morhen", level: 19, type: "Main" },
+      { id: 130, title: "No Place Like Home", region: "Kaer Morhen", level: 19, type: "Main" },
+      { id: 131, title: "Va Fail, Elaine", region: "Kaer Morhen", level: 19, type: "Main" },
+      { id: 132, title: "The Isle of Mists", region: "Kaer Morhen", level: 22, type: "Main" },
+      { id: 133, title: "Brothers in Arms: Velen", region: "Kaer Morhen", level: 22, type: "Main" },
+      { id: 134, title: "Brothers in Arms: Novigrad", region: "Kaer Morhen", level: 22, type: "Main" },
+      { id: 135, title: "Brothers in Arms: Skellige", region: "Kaer Morhen", level: 22, type: "Main" },
+      { id: 136, title: "Brothers in Arms: Nilfgaard", region: "Kaer Morhen", level: 22, type: "Main" },
+      { id: 137, title: "Brothers in Arms: Kaer Morhen", region: "Kaer Morhen", level: 22, type: "Main" },
+      { id: 138, title: "The Battle of Kaer Morhen", region: "Kaer Morhen", level: 24, type: "Main" },
+      { id: 139, title: "Blood on the Battlefield", region: "Kaer Morhen", level: 25, type: "Main" },
+      { id: 140, title: "Final Preparations", region: "Kaer Morhen", level: 28, type: "Main" },
+      { id: 141, title: "Child of the Elder Blood", region: "Kaer Morhen", level: 28, type: "Main" },
+      { id: 142, title: "Skjall's Grave", region: "Kaer Morhen", level: 28, type: "Main" },
+      { id: 143, title: "The Sunstone", region: "Kaer Morhen", level: 28, type: "Main" },
+      { id: 144, title: "Veni Vidi Vigo", region: "Kaer Morhen", level: 28, type: "Main" },
+      { id: 145, title: "Through Time and Space", region: "Kaer Morhen", level: 26, type: "Main" },
+      { id: 146, title: "Battle Preparations", region: "Kaer Morhen", level: 28, type: "Main" },
+      { id: 147, title: "On Thin Ice", region: "Kaer Morhen", level: 30, type: "Main" },
+      { id: 148, title: "Tedd Deireadh, The Final Age", region: "Kaer Morhen", level: 30, type: "Main" },
+      { id: 149, title: "Something Ends, Something Begins", region: "Kaer Morhen", level: 30, type: "Main" },
+
+      // HEARTS OF STONE
+      { id: 150, title: "Evil's Soft First Touches", region: "Hearts of Stone", level: 32, type: "Main" },
+      { id: 151, title: "Dead Man's Party", region: "Hearts of Stone", level: 33, type: "Main" },
+      { id: 152, title: "Open Sesame!", region: "Hearts of Stone", level: 34, type: "Main" },
+      { id: 153, title: "Scenes From a Marriage", region: "Hearts of Stone", level: 35, type: "Main" },
+      { id: 154, title: "Whatsoever a Man Soweth...", region: "Hearts of Stone", level: 35, type: "Main" },
+      { id: 155, title: "From Ofier's Distant Shores", region: "Hearts of Stone", level: 33, type: "Side" },
+      { id: 156, title: "Enchanting: Start-up Costs", region: "Hearts of Stone", level: 32, type: "Side" },
+      { id: 157, title: "Open Sesame! - Safecracker", region: "Hearts of Stone", level: 34, type: "Activity" },
+      { id: 158, title: "Open Sesame! - Witcher Seasonings", region: "Hearts of Stone", level: 34, type: "Activity" },
+      { id: 159, title: "Open Sesame! - Borsodi's House", region: "Hearts of Stone", level: 34, type: "Activity" },
+
+      // BLOOD AND WINE / TOUSSAINT
+      { id: 160, title: "Envoys, Wineboys", region: "Toussaint", level: 34, type: "Main" },
+      { id: 161, title: "The Beast of Toussaint", region: "Toussaint", level: 35, type: "Main" },
+      { id: 162, title: "Blood Run", region: "Toussaint", level: 36, type: "Main" },
+      { id: 163, title: "The Nilfgaardian Connection (Toussaint arrival)", region: "Toussaint", level: 34, type: "Activity" },
+      { id: 164, title: "La Cage au Fou", region: "Toussaint", level: 36, type: "Main" },
+      { id: 165, title: "Where Children Toil, Toys Waste Away", region: "Toussaint", level: 36, type: "Main" },
+      { id: 166, title: "The Night of Long Fangs", region: "Toussaint", level: 47, type: "Main" },
+      { id: 167, title: "Capture the Castle", region: "Toussaint", level: 47, type: "Main" },
+      { id: 168, title: "Beyond Hill and Dale...", region: "Toussaint", level: 47, type: "Main" },
+      { id: 169, title: "Tesham Mutna", region: "Toussaint", level: 47, type: "Main" },
+      { id: 170, title: "Pomp and Strange Circumstance", region: "Toussaint", level: 49, type: "Main" },
+      { id: 171, title: "Turn and Face the Strange", region: "Toussaint", level: 35, type: "Side" },
+      { id: 172, title: "There Can Be Only One", region: "Toussaint", level: 40, type: "Side" },
+      { id: 173, title: "No Place Like Home (Corvo Bianco)", region: "Toussaint", level: 35, type: "Side" },
+      { id: 174, title: "Portrait of the Witcher as an Old Man", region: "Toussaint", level: 37, type: "Side" },
+      { id: 175, title: "Warble of a Smitten Knight", region: "Toussaint", level: 39, type: "Side" },
+      { id: 176, title: "Till Death Do You Part", region: "Toussaint", level: 36, type: "Side" },
+      { id: 177, title: "Big Game Hunter", region: "Toussaint", level: 38, type: "Side" },
+      { id: 178, title: "Father Knows Worst", region: "Toussaint", level: 37, type: "Side" },
+      { id: 179, title: "A Knight's Tales", region: "Toussaint", level: 38, type: "Side" },
+      { id: 180, title: "Goodness, Gracious, Great Balls of Granite!", region: "Toussaint", level: 38, type: "Side" },
+      { id: 181, title: "The Warble of a Smitten Knight Tournament", region: "Toussaint", level: 39, type: "Activity" },
+      { id: 182, title: "Contract: The Beast of Honorton", region: "Toussaint", level: 40, type: "Contract" },
+      { id: 183, title: "Contract: Big Bad Wolf", region: "Toussaint", level: 43, type: "Contract" },
+      { id: 184, title: "Contract: Bovine Blues", region: "Toussaint", level: 39, type: "Contract" },
+      { id: 185, title: "Contract: Father Knows Worst", region: "Toussaint", level: 37, type: "Contract" },
+      { id: 186, title: "Contract: Feet as Cold as Ice", region: "Toussaint", level: 45, type: "Contract" },
+      { id: 187, title: "Contract: Mutual of Beauclair's Wild Kingdom", region: "Toussaint", level: 48, type: "Contract" },
+      { id: 188, title: "Scavenger Hunt: Grandmaster Feline Gear", region: "Toussaint", level: 40, type: "Scavenger" },
+      { id: 189, title: "Scavenger Hunt: Grandmaster Griffin Gear", region: "Toussaint", level: 40, type: "Scavenger" },
+      { id: 190, title: "Scavenger Hunt: Grandmaster Ursine Gear", region: "Toussaint", level: 40, type: "Scavenger" },
+      { id: 191, title: "Scavenger Hunt: Grandmaster Wolven Gear", region: "Toussaint", level: 40, type: "Scavenger" },
+      { id: 192, title: "Scavenger Hunt: Grandmaster Manticore Gear", region: "Toussaint", level: 40, type: "Scavenger" }
     ];
 
-    // Initialisation de l’état
-    const storageKey = "witcher3-quests";
-    const saved = localStorage.getItem(storageKey);
-    if (saved) {
-      const savedQuests = JSON.parse(saved);
-      quests.forEach(q => {
-        const saved = savedQuests.find(sq => sq.titre === q.titre);
-        if (saved) q.done = saved.done;
+    const STORAGE_KEY = "witcher3_tracker_progress_v1";
+
+    let selectedRegion = "all";
+    let selectedType = "all";
+    let selectedSort = "level-asc";
+    let searchTerm = "";
+
+    const progressState = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+    const els = {
+      totalCount: document.getElementById("totalCount"),
+      doneCount: document.getElementById("doneCount"),
+      remainingCount: document.getElementById("remainingCount"),
+      progressPercent: document.getElementById("progressPercent"),
+      progressBar: document.getElementById("progressBar"),
+      searchInput: document.getElementById("searchInput"),
+      regionFilter: document.getElementById("regionFilter"),
+      typeFilter: document.getElementById("typeFilter"),
+      sortFilter: document.getElementById("sortFilter"),
+      regionList: document.getElementById("regionList"),
+      questList: document.getElementById("questList"),
+      currentViewTitle: document.getElementById("currentViewTitle"),
+      currentViewSubtitle: document.getElementById("currentViewSubtitle"),
+      resetProgress: document.getElementById("resetProgress"),
+    };
+
+    function typeClass(type) {
+      const map = {
+        Main: "type-main",
+        Side: "type-side",
+        Contract: "type-contract",
+        Treasure: "type-treasure",
+        Gwent: "type-gwent",
+        Scavenger: "type-scavenger",
+        Activity: "type-activity",
+      };
+      return map[type] || "";
+    }
+
+    function isDone(id) {
+      return !!progressState[id];
+    }
+
+    function saveProgress() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progressState));
+    }
+
+    function getRegions() {
+      return [...new Set(questData.map(q => q.region))].sort((a, b) => a.localeCompare(b));
+    }
+
+    function getTypes() {
+      return [...new Set(questData.map(q => q.type))].sort((a, b) => a.localeCompare(b));
+    }
+
+    function getFilteredQuests() {
+      let data = [...questData];
+
+      if (selectedRegion !== "all") {
+        data = data.filter(q => q.region === selectedRegion);
+      }
+
+      if (selectedType !== "all") {
+        data = data.filter(q => q.type === selectedType);
+      }
+
+      if (searchTerm.trim()) {
+        const s = searchTerm.toLowerCase();
+        data = data.filter(q =>
+          q.title.toLowerCase().includes(s) ||
+          q.region.toLowerCase().includes(s) ||
+          q.type.toLowerCase().includes(s) ||
+          String(q.level).includes(s)
+        );
+      }
+
+      switch (selectedSort) {
+        case "level-desc":
+          data.sort((a, b) => b.level - a.level || a.title.localeCompare(b.title));
+          break;
+        case "name-asc":
+          data.sort((a, b) => a.title.localeCompare(b.title));
+          break;
+        case "region-asc":
+          data.sort((a, b) => a.region.localeCompare(b.region) || a.level - b.level);
+          break;
+        default:
+          data.sort((a, b) => a.level - b.level || a.title.localeCompare(b.title));
+      }
+
+      return data;
+    }
+
+    function renderRegionSidebar() {
+      const regions = getRegions();
+      const totalAll = questData.length;
+      const doneAll = questData.filter(q => isDone(q.id)).length;
+
+      const allBtn = document.createElement("button");
+      allBtn.className = "region-btn" + (selectedRegion === "all" ? " active" : "");
+      allBtn.innerHTML = `
+        <span>Toutes</span>
+        <span class="badge">${doneAll}/${totalAll}</span>
+      `;
+      allBtn.onclick = () => {
+        selectedRegion = "all";
+        els.regionFilter.value = "all";
+        renderAll();
+      };
+      els.regionList.appendChild(allBtn);
+
+      regions.forEach(region => {
+        const regionQuests = questData.filter(q => q.region === region);
+        const done = regionQuests.filter(q => isDone(q.id)).length;
+        const btn = document.createElement("button");
+        btn.className = "region-btn" + (selectedRegion === region ? " active" : "");
+        btn.innerHTML = `
+          <span>${region}</span>
+          <span class="badge">${done}/${regionQuests.length}</span>
+        `;
+        btn.onclick = () => {
+          selectedRegion = region;
+          els.regionFilter.value = region;
+          renderAll();
+        };
+        els.regionList.appendChild(btn);
       });
     }
 
-    function save() {
-      localStorage.setItem(storageKey, JSON.stringify(quests));
-    }
+    function renderFilters() {
+      getRegions().forEach(region => {
+        const option = document.createElement("option");
+        option.value = region;
+        option.textContent = region;
+        els.regionFilter.appendChild(option);
+      });
 
-    function toggleTheme() {
-      const dark = document.documentElement.getAttribute("data-theme") === "dark";
-      document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
-      document.getElementById("icon-theme").textContent = dark ? "🌞" : "🌙";
-    }
-
-    function updateProgress() {
-      const done = quests.filter(q => q.done).length;
-      const total = quests.length;
-      const pct = total === 0 ? 0 : (done / total * 100).toFixed(1);
-      const el = document.getElementById("progress");
-      el.textContent = `${done}/${total} tâches complètes (${pct})%`;
-    }
-
-    function renderZones() {
-      const set = new Set();
-      quests.forEach(q => set.add(q.zone));
-      const zones = Array.from(set).sort();
-      const zonesEl = document.getElementById("zones");
-      zonesEl.innerHTML = `<div class="tab active" data-zone="all">Toutes</div>`;
-      zones.forEach(zone => {
-        const tab = document.createElement("div");
-        tab.className = "tab";
-        tab.setAttribute("data-zone", zone);
-        tab.textContent = zone;
-        zonesEl.appendChild(tab);
+      getTypes().forEach(type => {
+        const option = document.createElement("option");
+        option.value = type;
+        option.textContent = type;
+        els.typeFilter.appendChild(option);
       });
     }
 
-    function renderQuests() {
-      const list = document.getElementById("quests");
-      const currentZone = document.querySelector(".tab.active").dataset.zone;
-      list.innerHTML = "";
-      quests.forEach(quest => {
-        if (currentZone !== "all" && quest.zone !== currentZone) return;
-        const li = document.createElement("li");
-        li.className = "quête";
-        const check = document.createElement("div");
-        check.className = "check-box" + (quest.done ? " checked" : "");
-        check.textContent = "✓";
-        check.addEventListener("click", () => {
-          quest.done = !quest.done;
-          check.classList.toggle("checked");
-          save();
-          updateProgress();
+    function renderStats(filtered) {
+      const total = filtered.length;
+      const done = filtered.filter(q => isDone(q.id)).length;
+      const remaining = total - done;
+      const percent = total ? Math.round((done / total) * 100) : 0;
+
+      els.totalCount.textContent = total;
+      els.doneCount.textContent = done;
+      els.remainingCount.textContent = remaining;
+      els.progressPercent.textContent = percent + "%";
+      els.progressBar.style.width = percent + "%";
+    }
+
+    function renderTitle(filtered) {
+      const regionLabel = selectedRegion === "all" ? "Toutes les quêtes" : selectedRegion;
+      els.currentViewTitle.textContent = regionLabel;
+
+      const count = filtered.length;
+      const done = filtered.filter(q => isDone(q.id)).length;
+      els.currentViewSubtitle.textContent = `${done}/${count} terminées`;
+    }
+
+    function renderQuestList(filtered) {
+      els.questList.innerHTML = "";
+
+      if (!filtered.length) {
+        els.questList.innerHTML = `<div class="empty">Aucune quête ne correspond aux filtres actuels.</div>`;
+        return;
+      }
+
+      filtered.forEach(q => {
+        const item = document.createElement("div");
+        item.className = "quest" + (isDone(q.id) ? " done" : "");
+
+        const checked = isDone(q.id) ? "checked" : "";
+
+        item.innerHTML = `
+          <input type="checkbox" ${checked} aria-label="Marquer ${q.title} comme terminée">
+          <div>
+            <div class="quest-title">${q.title}</div>
+            <div class="quest-meta">
+              <span class="pill">${q.region}</span>
+              <span class="pill ${typeClass(q.type)}">${q.type}</span>
+              <span class="pill">Niveau ${q.level}</span>
+            </div>
+          </div>
+          <div class="badge">${isDone(q.id) ? "Fait" : "À faire"}</div>
+        `;
+
+        const checkbox = item.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener("change", () => {
+          progressState[q.id] = checkbox.checked;
+          saveProgress();
+          renderAll();
         });
-        const titre = document.createElement("div");
-        titre.className = "titre";
-        titre.textContent = quest.titre;
-        const zone = document.createElement("div");
-        zone.className = "zone";
-        zone.textContent = quest.zone;
 
-        li.appendChild(check);
-        li.appendChild(titre);
-        li.appendChild(zone);
-        list.appendChild(li);
+        els.questList.appendChild(item);
       });
     }
 
-    function initTabs() {
-      const tabs = document.querySelectorAll(".tab");
-      tabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-          document.querySelector(".tab.active").classList.remove("active");
-          tab.classList.add("active");
-          renderQuests();
-        });
-      });
+    function renderAll() {
+      els.regionList.innerHTML = "";
+      const filtered = getFilteredQuests();
+      renderRegionSidebar();
+      renderStats(filtered);
+      renderTitle(filtered);
+      renderQuestList(filtered);
     }
 
-    // Initialisation
-    renderZones();
-    updateProgress();
-    renderQuests();
-    initTabs();
+    els.searchInput.addEventListener("input", e => {
+      searchTerm = e.target.value;
+      renderAll();
+    });
+
+    els.regionFilter.addEventListener("change", e => {
+      selectedRegion = e.target.value;
+      renderAll();
+    });
+
+    els.typeFilter.addEventListener("change", e => {
+      selectedType = e.target.value;
+      renderAll();
+    });
+
+    els.sortFilter.addEventListener("change", e => {
+      selectedSort = e.target.value;
+      renderAll();
+    });
+
+    els.resetProgress.addEventListener("click", () => {
+      if (confirm("Réinitialiser toute la progression ?")) {
+        Object.keys(progressState).forEach(k => delete progressState[k]);
+        saveProgress();
+        renderAll();
+      }
+    });
+
+    renderFilters();
+    renderAll();
   </script>
 </body>
 </html>
